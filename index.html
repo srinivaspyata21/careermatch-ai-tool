@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareerMatch — AI-Powered Job Search Engine</title>
+<meta name="description" content="Free AI-powered job search toolkit. ATS scorer, keyword analyzer, resume tips, interview prep prompts, and salary guides for 16 industries.">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0F1E;--bg2:#0F1629;--bg3:#141D35;
+  --surface:rgba(255,255,255,.04);--surface2:rgba(255,255,255,.07);
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);
+  --text:#E8EDF5;--muted:#6B7A99;--muted2:#8A96B0;
+  --blue:#4A90E8;--blue2:#6BA8F0;--blue-bg:rgba(74,144,232,.1);--blue-border:rgba(74,144,232,.2);
+  --green:#2ECC8A;--green-bg:rgba(46,204,138,.08);--green-border:rgba(46,204,138,.18);
+  --amber:#F5A623;--amber-bg:rgba(245,166,35,.08);--amber-border:rgba(245,166,35,.18);
+  --red:#E85C5C;--red-bg:rgba(232,92,92,.08);--red-border:rgba(232,92,92,.18);
+  --purple:#8B6CF7;--purple-bg:rgba(139,108,247,.08);--purple-border:rgba(139,108,247,.2);
+  --r-sm:8px;--r-md:12px;--r-lg:16px;--r-xl:20px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;font-size:15px;line-height:1.6}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:99px}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;background:rgba(10,15,30,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:800;color:var(--text);letter-spacing:-.02em}
+.logo span{color:var(--blue)}
+.nav-tabs{display:flex;gap:2px;overflow-x:auto}
+.nav-tabs::-webkit-scrollbar{display:none}
+.nt{padding:6px 12px;border-radius:var(--r-sm);font-size:.78rem;font-weight:600;color:var(--muted);cursor:pointer;border:none;background:transparent;transition:all .15s;white-space:nowrap;letter-spacing:.01em}
+.nt:hover{color:var(--text);background:var(--surface)}
+.nt.on{color:#fff;background:var(--blue)}
+.nav-right{display:flex;align-items:center;gap:8px}
+.nav-badge{font-size:.68rem;font-weight:700;padding:3px 8px;border-radius:99px;background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+
+/* ── HERO ── */
+.hero{padding:5rem 1.5rem 3.5rem;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 90% 60% at 50% 0%,rgba(74,144,232,.12) 0%,transparent 70%);pointer-events:none}
+.hero-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:99px;border:1px solid var(--blue-border);background:var(--blue-bg);font-size:.72rem;font-weight:700;color:var(--blue2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1.5rem}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pls 2s infinite}
+@keyframes pls{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+.hero h1{font-family:'Fraunces',serif;font-size:clamp(2.2rem,5.5vw,4rem);font-weight:800;line-height:1.08;letter-spacing:-.03em;margin-bottom:1.25rem;max-width:700px;margin-left:auto;margin-right:auto}
+.hero h1 em{font-style:italic;color:var(--blue2)}
+.hero h1 strong{font-style:normal;background:linear-gradient(135deg,var(--green),var(--blue2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:1.05rem;color:var(--muted2);max-width:520px;margin:0 auto 2.5rem;font-weight:400;line-height:1.7}
+.hero-stats{display:flex;justify-content:center;flex-wrap:wrap;gap:2rem;margin-top:2rem}
+.hstat .n{font-family:'Fraunces',serif;font-size:2rem;font-weight:800;color:var(--blue2)}
+.hstat .l{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.hero-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:1rem}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:var(--r-md);font-size:.82rem;font-weight:600;border:1px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;text-decoration:none;white-space:nowrap}
+.btn:hover{background:var(--surface2);border-color:rgba(255,255,255,.2)}
+.btn-primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn-primary:hover{background:var(--blue2);border-color:var(--blue2)}
+.btn-green{background:var(--green-bg);border-color:var(--green-border);color:var(--green)}
+.btn-green:hover{background:rgba(46,204,138,.15)}
+.btn-sm{padding:6px 12px;font-size:.75rem}
+.btn-copy{padding:5px 10px;font-size:.72rem;border-radius:var(--r-sm)}
+
+/* ── LAYOUT ── */
+.wrap{max-width:1140px;margin:0 auto;padding:2rem 1.5rem}
+.section{display:none}.section.on{display:block}
+.sec-header{margin-bottom:2rem}
+.sec-title{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:800;letter-spacing:-.02em;margin-bottom:.35rem}
+.sec-sub{font-size:.88rem;color:var(--muted2);line-height:1.65;max-width:600px}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem 1.5rem;transition:border-color .2s,background .2s}
+.card:hover{background:var(--surface2);border-color:var(--border2)}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:99px;letter-spacing:.02em;white-space:nowrap}
+.b-blue{background:var(--blue-bg);color:var(--blue2);border:1px solid var(--blue-border)}
+.b-green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.b-amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border)}
+.b-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+.b-purple{background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border)}
+.b-muted{background:var(--surface);color:var(--muted2);border:1px solid var(--border)}
+
+/* ── INDUSTRY SELECTOR ── */
+.ind-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:1.5rem}
+.ind-card{padding:.75rem;border-radius:var(--r-md);border:1px solid var(--border);background:var(--surface);cursor:pointer;transition:all .18s;text-align:center}
+.ind-card:hover{border-color:var(--border2);background:var(--surface2)}
+.ind-card.on{border-color:var(--blue);background:var(--blue-bg)}
+.ind-icon{font-size:1.4rem;margin-bottom:.3rem;display:block}
+.ind-name{font-size:.73rem;font-weight:600;color:var(--muted2);line-height:1.3}
+.ind-card.on .ind-name{color:var(--blue2)}
+
+/* ── ATS SCORER ── */
+.ats-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+@media(max-width:720px){.ats-wrap{grid-template-columns:1fr}}
+textarea{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:var(--r-md);padding:12px 14px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:.84rem;line-height:1.6;resize:vertical;min-height:160px;transition:border-color .2s}
+textarea:focus{outline:none;border-color:var(--blue)}
+textarea::placeholder{color:var(--muted)}
+select,input[type=text]{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 12px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:.84rem;cursor:pointer;transition:border-color .2s}
+select:focus,input[type=text]:focus{outline:none;border-color:var(--blue)}
+.form-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:5px;display:block}
+.form-group{margin-bottom:12px}
+.score-circle{position:relative;width:120px;height:120px;margin:0 auto 1rem}
+.score-circle svg{transform:rotate(-90deg)}
+.score-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.score-num{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:800;line-height:1}
+.score-pct{font-size:.7rem;color:var(--muted);margin-top:2px}
+.progress{height:5px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden;margin-bottom:1.25rem}
+.progress-fill{height:100%;border-radius:99px;transition:width .7s cubic-bezier(.4,0,.2,1)}
+.kw-cloud{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:1rem}
+.kw{font-size:.7rem;font-weight:600;padding:3px 9px;border-radius:99px}
+.kw-hit{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.kw-miss{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+.kw-na{background:var(--surface);color:var(--muted2);border:1px solid var(--border)}
+.result-section{margin-bottom:1rem}
+.result-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.4rem}
+.placeholder-state{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;gap:.75rem;text-align:center}
+.ph-icon{font-size:2rem;opacity:.15}
+.ph-text{font-size:.82rem;color:var(--muted);max-width:240px;line-height:1.6}
+
+/* ── PROMPTS ── */
+.prompt-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;margin-bottom:10px}
+.prompt-title{font-size:.9rem;font-weight:700;margin-bottom:.4rem;color:var(--blue2)}
+.prompt-desc{font-size:.78rem;color:var(--muted2);margin-bottom:.75rem;line-height:1.5}
+.prompt-box{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:var(--r-md);padding:.85rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;color:var(--muted2);white-space:pre-wrap;line-height:1.65;margin-bottom:.75rem;max-height:180px;overflow-y:auto}
+.prompt-box::-webkit-scrollbar{width:3px}
+.prompt-box::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:99px}
+.copy-success{font-size:.72rem;color:var(--green);margin-left:8px;opacity:0;transition:opacity .3s;display:inline}
+
+/* ── SALARY ── */
+.sal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.sal-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;transition:all .18s}
+.sal-card:hover{background:var(--surface2);border-color:var(--border2)}
+.sal-role{font-size:.88rem;font-weight:700;margin-bottom:.2rem}
+.sal-ind{font-size:.72rem;color:var(--muted);margin-bottom:.75rem}
+.sal-range{display:flex;align-items:baseline;gap:6px;margin-bottom:.5rem}
+.sal-low{font-size:1.1rem;font-weight:800;font-family:'Fraunces',serif;color:var(--amber)}
+.sal-high{font-size:1.4rem;font-weight:800;font-family:'Fraunces',serif;color:var(--green)}
+.sal-sep{font-size:.8rem;color:var(--muted)}
+.sal-bar{height:5px;border-radius:99px;background:linear-gradient(to right,var(--amber),var(--green));margin-bottom:.75rem;opacity:.6}
+.sal-tags{display:flex;flex-wrap:wrap;gap:4px}
+.sal-tag{font-size:.67rem;padding:2px 7px;border-radius:4px;background:var(--surface2);color:var(--muted2);border:1px solid var(--border)}
+
+/* ── PORTALS ── */
+.portal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.portal-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;display:flex;flex-direction:column;gap:.75rem;transition:all .18s}
+.portal-card:hover{background:var(--surface2);border-color:var(--border2)}
+.portal-name{font-size:.95rem;font-weight:800;font-family:'Fraunces',serif}
+.portal-region{font-size:.7rem;color:var(--muted);margin-bottom:2px}
+.portal-desc{font-size:.78rem;color:var(--muted2);line-height:1.5}
+.portal-tip{font-size:.72rem;padding:6px 10px;border-radius:var(--r-sm);background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);line-height:1.5}
+
+/* ── INTERVIEW ── */
+.q-list{display:flex;flex-direction:column;gap:10px}
+.q-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.1rem 1.25rem;cursor:pointer;transition:all .18s}
+.q-item:hover{background:var(--surface2);border-color:var(--border2)}
+.q-item.expanded{border-color:var(--blue-border);background:var(--blue-bg)}
+.q-text{font-size:.88rem;font-weight:600;margin-bottom:0}
+.q-hint{font-size:.78rem;color:var(--muted2);margin-top:.5rem;line-height:1.55;display:none}
+.q-item.expanded .q-hint{display:block}
+.q-badge{float:right;margin-left:8px;margin-top:2px}
+
+/* ── WORKFLOW ── */
+.steps{display:flex;flex-direction:column;gap:0;max-width:700px}
+.step{display:grid;grid-template-columns:52px 1fr;gap:1rem;position:relative}
+.step:not(:last-child)::after{content:'';position:absolute;left:25px;top:52px;width:2px;height:calc(100% - 12px);background:linear-gradient(to bottom,rgba(74,144,232,.3),transparent)}
+.step-n{width:52px;height:52px;border-radius:var(--r-md);background:var(--blue-bg);border:1px solid var(--blue-border);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:1.1rem;font-weight:800;color:var(--blue2);flex-shrink:0}
+.step-body{padding-bottom:2rem}
+.step-title{font-size:.92rem;font-weight:700;margin-bottom:.3rem}
+.step-desc{font-size:.8rem;color:var(--muted2);line-height:1.6}
+.step-time{display:inline-block;margin-top:.5rem;font-size:.68rem;padding:2px 8px;border-radius:99px;background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);font-weight:600}
+
+/* ── TIPS BOX ── */
+.tip-box{padding:.85rem 1rem;border-radius:var(--r-md);border-left:3px solid;margin-bottom:8px;font-size:.8rem;line-height:1.55}
+.tip-green{background:var(--green-bg);border-color:var(--green);color:rgba(232,237,245,.8)}
+.tip-amber{background:var(--amber-bg);border-color:var(--amber);color:rgba(232,237,245,.8)}
+.tip-red{background:var(--red-bg);border-color:var(--red);color:rgba(232,237,245,.8)}
+.tip-blue{background:var(--blue-bg);border-color:var(--blue);color:rgba(232,237,245,.8)}
+
+/* ── DIVIDER ── */
+hr{border:none;border-top:1px solid var(--border);margin:2rem 0}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .hero h1{font-size:2rem}
+  .ind-grid{grid-template-columns:repeat(3,1fr)}
+  .hero-stats{gap:1.25rem}
+  .nt{padding:5px 9px;font-size:.72rem}
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .35s ease both}
+.section.on .sec-header{animation:fadeUp .3s ease both}
+
+/* ── FOOTER ── */
+footer{text-align:center;padding:2.5rem 1.5rem;border-top:1px solid var(--border);font-size:.75rem;color:var(--muted);margin-top:4rem}
+footer a{color:var(--blue2);text-decoration:none}
+footer a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Career<span>Match</span></div>
+  <div class="nav-tabs">
+    <button class="nt on" onclick="nav('ats',this)">ATS Scorer</button>
+    <button class="nt" onclick="nav('prompts',this)">AI Prompts</button>
+    <button class="nt" onclick="nav('salary',this)">Salary Guide</button>
+    <button class="nt" onclick="nav('interview',this)">Interview Prep</button>
+    <button class="nt" onclick="nav('portals',this)">Job Portals</button>
+    <button class="nt" onclick="nav('workflow',this)">Workflow</button>
+  </div>
+  <div class="nav-right">
+    <span class="nav-badge">Free · No Sign-Up</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero" id="hero">
+  <div class="hero-pill"><div class="pulse"></div>Open Source · Public Tool</div>
+  <h1>Land your next job<br>with <em>smarter</em> <strong>tools</strong></h1>
+  <p class="hero-sub">Free ATS keyword scorer, salary benchmarks, AI prompt templates, and interview guides across 16 industries. No sign-up. No cost. Built for everyone.</p>
+  <div class="hero-actions">
+    <button class="btn btn-primary" onclick="nav('ats',document.querySelector('.nt'))">Check My ATS Score →</button>
+    <button class="btn" onclick="nav('salary',document.querySelectorAll('.nt')[2])">Browse Salaries</button>
+  </div>
+  <div class="hero-stats">
+    <div class="hstat"><div class="n">16</div><div class="l">Industries</div></div>
+    <div class="hstat"><div class="n">200+</div><div class="l">ATS Keywords</div></div>
+    <div class="hstat"><div class="n">80+</div><div class="l">Salary Benchmarks</div></div>
+    <div class="hstat"><div class="n">15+</div><div class="l">Job Portals</div></div>
+  </div>
+</div>
+
+<!-- ══ ATS SCORER ══ -->
+<div class="section on" id="sec-ats">
+<div class="wrap">
+<div class="sec-header">
+  <div class="sec-title">ATS Keyword Scorer</div>
+  <div class="sec-sub">Paste any job description, select your industry, and instantly see how well your resume matches — with a keyword breakdown and gap list.</div>
+</div>
+
+<div style="margin-bottom:1.5rem">
+  <div class="form-label" style="margin-bottom:8px">Select your industry</div>
+  <div class="ind-grid" id="ind-grid-ats"></div>
+</div>
+
+<div class="ats-wrap">
+  <div>
+    <div class="form-group">
+      <label class="form-label">Paste Job Description</label>
+      <textarea id="jd" placeholder="Paste the full job description here — responsibilities, qualifications, and preferred experience. The more complete, the more accurate your score." style="min-height:200px"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="score()">Analyze →</button>
+      <button class="btn" onclick="clearATS()">Clear</button>
+    </div>
+    <div id="gap-advice"></div>
+  </div>
+  <div class="card" id="ats-result">
+    <div class="placeholder-state" id="ph-ats">
+      <div class="ph-icon">◎</div>
+      <div class="ph-text">Select your industry and paste a job description, then click Analyze to see your ATS score.</div>
+    </div>
+    <div id="ats-content" style="display:none">
+      <div style="text-align:center;margin-bottom:1.25rem">
+        <div class="score-circle">
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="10"/>
+            <circle id="arc" cx="60" cy="60" r="50" fill="none" stroke-width="10" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="314"/>
+          </svg>
+          <div class="score-val"><div class="score-num" id="snum">—</div><div class="score-pct">match</div></div>
+        </div>
+        <div style="font-size:.82rem;font-weight:600" id="sverdict"></div>
+      </div>
+      <div class="progress"><div class="progress-fill" id="sbar" style="width:0%"></div></div>
+      <div class="result-section">
+        <div class="result-label">Keywords found in typical profiles</div>
+        <div class="kw-cloud" id="kw-found"></div>
+      </div>
+      <div class="result-section">
+        <div class="result-label">Keywords missing — add these to your resume</div>
+        <div class="kw-cloud" id="kw-missing"></div>
+      </div>
+      <div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap" id="ats-btns"></div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ══ PROMPTS ══ -->
+<div class="section" id="sec-prompts">
+<div class="wrap">
+<div class="sec-header">
+  <div class="sec-title">AI Prompt Templates</div>
+  <div class="sec-sub">Copy any prompt below and paste it into Claude.ai (free), ChatGPT, or any AI assistant. Fill in the brackets with your details for a tailored output.</div>
+</div>
+<div class="tip-box tip-blue" style="margin-bottom:1.5rem">How to use: Copy a prompt → Open <a href="https://claude.ai" target="_blank" style="color:var(--blue2)">claude.ai</a> or <a href="https://chatgpt.com" target="_blank" style="color:var(--blue2)">chatgpt.com</a> (free) → Paste the prompt → Fill in the [brackets] with your real details → Generate your tailored output.</div>
+<div id="prompt-list"></div>
+</div>
+</div>
+
+<!-- ══ SALARY ══ -->
+<div class="section" id="sec-salary">
+<div class="wrap">
+<div class="sec-header">
+  <div class="sec-title">Salary Benchmark Guide</div>
+  <div class="sec-sub">Estimated salary ranges by role and industry. Figures reflect Canadian market (CAD) with global context where applicable. Always verify with current postings and sites like Glassdoor, Levels.fyi, or PayScale.</div>
+</div>
+<div style="margin-bottom:1.25rem;display:flex;gap:8px;flex-wrap:wrap" id="sal-filters"></div>
+<div class="sal-grid" id="sal-grid"></div>
+<div class="tip-box tip-amber" style="margin-top:1.5rem">Salary ranges are estimates based on publicly available data. Actual compensation varies by employer, location, experience, and negotiation. Always research current postings and use Glassdoor, LinkedIn Salary, or Levels.fyi for verification before negotiating.</div>
+</div>
+</div>
+
+<!-- ══ INTERVIEW ══ -->
+<div class="section" id="sec-interview">
+<div class="wrap">
+<div class="sec-header">
+  <div class="sec-title">Interview Prep Guide</div>
+  <div class="sec-sub">Universal interview questions with coaching notes — plus industry-specific guides. Use the STAR method: Situation, Task, Action, Result.</div>
+</div>
+<div style="margin-bottom:1.25rem">
+  <div class="form-label" style="margin-bottom:8px">Select your industry for specific questions</div>
+  <div class="ind-grid" id="ind-grid-int"></div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+  <div>
+    <div style="font-size:.82rem;font-weight:700;margin-bottom:.75rem;color:var(--muted2);text-transform:uppercase;letter-spacing:.05em">Universal Questions</div>
+    <div class="q-list" id="q-universal"></div>
+  </div>
+  <div>
+    <div style="font-size:.82rem;font-weight:700;margin-bottom:.75rem;color:var(--blue2);text-transform:uppercase;letter-spacing:.05em" id="ind-q-label">Industry Questions</div>
+    <div class="q-list" id="q-industry"></div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ══ PORTALS ══ -->
+<div class="section" id="sec-portals">
+<div class="wrap">
+<div class="sec-header">
+  <div class="sec-title">Job Portals Directory</div>
+  <div class="sec-sub">The best job boards by region and industry. Set up email alerts on each one — fresh postings land in your inbox daily without logging in.</div>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem" id="portal-filters"></div>
+<div class="portal-grid" id="portal-grid"></div>
+</div>
+</div>
+
+<!-- ══ WORKFLOW ══ -->
+<div class="section" id="sec-workflow">
+<div class="wrap">
+<div class="sec-header">
+  <div class="sec-title">Daily Job Search Workflow</div>
+  <div class="sec-sub">A structured 45-minute daily system that consistently outperforms mass-applying. Quality over quantity — always.</div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem">
+<div>
+<div class="steps">
+  <div class="step"><div class="step-n">1</div><div class="step-body"><div class="step-title">Check your job alert emails</div><div class="step-desc">Set up alerts on Indeed, LinkedIn, and 1–2 specialist portals. Each morning, scan subject lines only — don't click everything. Pick the best 1–2.</div><span class="step-time">5 min</span></div></div>
+  <div class="step"><div class="step-n">2</div><div class="step-body"><div class="step-title">Shortlist ruthlessly</div><div class="step-desc">Apply only to roles where you meet 70%+ of the requirements. Applying to 20 mismatched roles wastes time that would be better spent tailoring 2 good applications.</div><span class="step-time">5 min</span></div></div>
+  <div class="step"><div class="step-n">3</div><div class="step-body"><div class="step-title">Run the ATS Scorer</div><div class="step-desc">Paste the JD into the ATS tab. Check your score. Note every red keyword — those need to appear naturally in your resume and cover letter before you apply.</div><span class="step-time">3 min</span></div></div>
+  <div class="step"><div class="step-n">4</div><div class="step-body"><div class="step-title">Tailor your resume and cover letter</div><div class="step-desc">Copy the Resume Tailoring prompt from the Prompts tab. Paste it into Claude.ai or ChatGPT (both free tiers work). Review the output — edit anything that doesn't sound like you.</div><span class="step-time">15 min</span></div></div>
+  <div class="step"><div class="step-n">5</div><div class="step-body"><div class="step-title">Read everything out loud</div><div class="step-desc">This is non-negotiable. If a sentence sounds unnatural, rewrite it. Recruiters can tell when a human didn't write something. Your documents must sound like you.</div><span class="step-time">10 min</span></div></div>
+  <div class="step"><div class="step-n">6</div><div class="step-body"><div class="step-title">Submit and track</div><div class="step-desc">Apply on the portal. Immediately log it: role, company, date, ATS score, portal, status. Set a 7-day follow-up reminder. Consistency compounds — the tracker shows you what works.</div><span class="step-time">5 min</span></div></div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+  <div class="card">
+    <div style="font-family:'Fraunces',serif;font-size:.95rem;font-weight:800;margin-bottom:.85rem;color:var(--blue2)">ATS Score Decision Guide</div>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <div class="tip-box tip-green" style="margin-bottom:0">75–95% — Strong match. Generate docs and apply today.</div>
+      <div class="tip-box tip-amber" style="margin-bottom:0">55–74% — Good fit. Address the missing keywords in your resume and cover letter first.</div>
+      <div class="tip-box tip-red" style="margin-bottom:0">Below 55% — Stretch role. Only apply if you can genuinely bridge the gaps in your cover letter.</div>
+    </div>
+  </div>
+  <div class="card">
+    <div style="font-family:'Fraunces',serif;font-size:.95rem;font-weight:800;margin-bottom:.85rem;color:var(--amber)">Common Mistakes</div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="tip-box tip-red" style="margin-bottom:0;font-size:.77rem">Never add keywords you cannot defend in an interview. ATS gets you in — the interview exposes you.</div>
+      <div class="tip-box tip-red" style="margin-bottom:0;font-size:.77rem">Don't mass-apply with one generic resume. 3 tailored applications beat 30 generic ones every time.</div>
+      <div class="tip-box tip-red" style="margin-bottom:0;font-size:.77rem">Don't forget to follow up after 7 days. One polite email dramatically increases response rates.</div>
+      <div class="tip-box tip-red" style="margin-bottom:0;font-size:.77rem">Don't skip the tracker. You will lose track of versions, deadlines, and who you spoke to.</div>
+    </div>
+  </div>
+  <div class="card">
+    <div style="font-family:'Fraunces',serif;font-size:.95rem;font-weight:800;margin-bottom:.85rem">Weekly Targets</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div style="text-align:center;padding:.75rem;border-radius:var(--r-md);background:var(--surface2);border:1px solid var(--border)"><div style="font-family:'Fraunces',serif;font-size:1.5rem;font-weight:800;color:var(--green)">5–8</div><div style="font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Applications/wk</div></div>
+      <div style="text-align:center;padding:.75rem;border-radius:var(--r-md);background:var(--surface2);border:1px solid var(--border)"><div style="font-family:'Fraunces',serif;font-size:1.5rem;font-weight:800;color:var(--blue2)">70%+</div><div style="font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Min ATS score</div></div>
+      <div style="text-align:center;padding:.75rem;border-radius:var(--r-md);background:var(--surface2);border:1px solid var(--border)"><div style="font-family:'Fraunces',serif;font-size:1.5rem;font-weight:800;color:var(--amber)">7 days</div><div style="font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Follow-up window</div></div>
+      <div style="text-align:center;padding:.75rem;border-radius:var(--r-md);background:var(--surface2);border:1px solid var(--border)"><div style="font-family:'Fraunces',serif;font-size:1.5rem;font-weight:800;color:var(--purple)">10–15%</div><div style="font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Normal response rate</div></div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<footer>
+  <div style="margin-bottom:.5rem">CareerMatch — Free, open source job search toolkit. Built for job seekers, by job seekers.</div>
+  <div>
+    <a href="https://claude.ai" target="_blank">Claude.ai (free AI)</a> &nbsp;·&nbsp;
+    <a href="https://chatgpt.com" target="_blank">ChatGPT (free AI)</a> &nbsp;·&nbsp;
+    <a href="https://github.com" target="_blank">View Source on GitHub</a> &nbsp;·&nbsp;
+    No data collected · No sign-up required
+  </div>
+</footer>
+
+<script>
+// ════ DATA ════════════════════════════════════════════════════
+
+const INDUSTRIES = [
+  {id:'it',icon:'💻',name:'IT & Software',kw:{profile:['software development','agile','scrum','git','version control','API','cloud','devops','CI/CD','testing','debugging','code review','javascript','python','sql','system design','microservices','REST','docker','kubernetes'],gaps:['machine learning','kubernetes','terraform','kafka','AWS','azure','GCP','react','typescript','blockchain','cybersecurity','penetration testing','SIEM']}},
+  {id:'mech',icon:'⚙️',name:'Mechanical Eng.',kw:{profile:['CAD','SolidWorks','AutoCAD','mechanical design','FEA','simulation','manufacturing','GD&T','HVAC','thermodynamics','materials science','project management','failure analysis','quality control','product development'],gaps:['ANSYS','CATIA','PLC','lean manufacturing','six sigma','ISO 9001','root cause analysis','tolerance analysis','DFM','DFA']}},
+  {id:'civil',icon:'🏗️',name:'Civil Engineering',kw:{profile:['structural analysis','AutoCAD','Civil 3D','project management','site supervision','surveying','environmental compliance','construction management','geotechnical','hydrology','traffic engineering','LEED'],gaps:['Revit','BIM','SAP2000','STAAD','geotechnical investigation','storm water management','slope stability','pile design','retaining walls']}},
+  {id:'elec',icon:'⚡',name:'Electrical & Electronics',kw:{profile:['circuit design','PCB layout','Altium','MATLAB','PLC programming','electrical schematics','power systems','SCADA','embedded systems','signal processing','instrumentation','testing and commissioning'],gaps:['FPGA','VHDL','Verilog','motor drives','protection relays','arc flash','NEC','IEC standards','HMI','DCS','high voltage']}},
+  {id:'trades',icon:'🔧',name:'Trades',kw:{profile:['Red Seal','journeyman','apprenticeship','blueprint reading','safety compliance','WHMIS','preventive maintenance','troubleshooting','installation','inspection','code compliance','tools and equipment'],gaps:['310S','309A','gas fitter','boiler pressure vessel','rigging','fall protection','confined space','HVAC/R certification','welding certification','millwright']}},
+  {id:'accounting',icon:'📊',name:'Accounting & Finance',kw:{profile:['financial reporting','GAAP','IFRS','accounts payable','accounts receivable','reconciliation','budgeting','forecasting','audit','tax compliance','Excel','ERP','month-end close','variance analysis'],gaps:['CPA','CFA','Bloomberg','SAP','Oracle','financial modelling','IFRS 16','consolidation','transfer pricing','FP&A','treasury','PCAOB']}},
+  {id:'business',icon:'📈',name:'Business & Management',kw:{profile:['strategic planning','stakeholder management','P&L management','KPI tracking','cross-functional leadership','change management','business development','market analysis','operations management','vendor management','project delivery'],gaps:['MBA','Salesforce','PowerBI','CRM','OKRs','balanced scorecard','M&A','due diligence','go-to-market','product roadmap','PRINCE2','PMP']}},
+  {id:'admin',icon:'🗂️',name:'Admin & Office Support',kw:{profile:['MS Office Suite','scheduling','calendar management','data entry','correspondence','filing','reception','customer service','minute-taking','expense reports','office management','confidentiality'],gaps:['CRM','Salesforce','SAP','SharePoint','DocuSign','Zoom','Asana','Monday.com','bookkeeping','payroll','virtual assistant','executive support']}},
+  {id:'security',icon:'🛡️',name:'Private Security',kw:{profile:['security guard licence','access control','CCTV surveillance','incident response','SOP compliance','report writing','emergency response','patrol','de-escalation','first aid','site supervision','shift scheduling'],gaps:['CPP','PSP','Lenel','Avigilon','visitor management','ULC','ISO compliance','GSOC','K9 handling','armoured transport','loss prevention']}},
+  {id:'supply',icon:'🚛',name:'Supply Chain & Logistics',kw:{profile:['inventory management','procurement','vendor management','purchase orders','demand planning','warehouse management','shipping and receiving','ERP','KPI reporting','cost reduction','supplier relations','import/export'],gaps:['SAP MM','Oracle SCM','WMS','TMS','lean logistics','APICS','CPIM','CSCMP','customs clearance','3PL management','freight forwarding','S&OP']}},
+  {id:'health',icon:'🏥',name:'Healthcare & Nursing',kw:{profile:['patient care','clinical assessment','medication administration','documentation','infection control','EMR','team collaboration','critical thinking','patient advocacy','vital signs','triage','interdisciplinary team'],gaps:['RN','BScN','ACLS','BCLS','ICU','ER','NICU','wound care','case management','RAI MDS','CNO','mentorship','charge nurse']}},
+  {id:'marketing',icon:'📣',name:'Marketing & Comms',kw:{profile:['content strategy','social media management','SEO','SEM','Google Analytics','email marketing','brand management','copywriting','campaign management','market research','stakeholder communication','creative brief'],gaps:['Google Ads','Meta Ads','HubSpot','Salesforce Marketing Cloud','A/B testing','conversion optimization','PR','influencer marketing','Figma','Adobe Creative Suite','ROI analysis']}},
+  {id:'legal',icon:'⚖️',name:'Legal & Paralegal',kw:{profile:['legal research','drafting','contract review','document management','litigation support','court filings','client communication','confidentiality','time management','MS Office','billing','compliance'],gaps:['LSO','notary','real estate law','corporate law','immigration law','family law','PCLaw','legal aid','title search','discovery','affidavit','PPSA']}},
+  {id:'education',icon:'🎓',name:'Education & Teaching',kw:{profile:['curriculum development','lesson planning','differentiated instruction','classroom management','student assessment','IEP','parent communication','Ontario curriculum','collaborative learning','special education','data-driven instruction'],gaps:['OCT','AQ courses','DECE','special education specialist','ELL','Brightspace','Google Classroom','EQAO','trauma-informed','restorative practices','French immersion']}},
+  {id:'hr',icon:'👥',name:'Human Resources',kw:{profile:['recruitment','onboarding','employee relations','performance management','HRIS','policy development','compensation','benefits administration','talent acquisition','training and development','employment law','workforce planning'],gaps:['CHRP','CHRL','ATS','Workday','SAP SuccessFactors','collective bargaining','labour relations','job evaluation','organizational development','succession planning','HR analytics']}},
+  {id:'arch',icon:'🏛️',name:'Architecture',kw:{profile:['Revit','AutoCAD','architectural design','building code','construction documents','project coordination','client presentations','schematic design','design development','specifications','site visits','LEED'],gaps:['OAA','AIBC','RAIC','BIM','Rhino','Grasshopper','SketchUp','Enscape','3ds Max','passive house','mass timber','heritage conservation']}},
+];
+
+const PROMPTS = [
+  {title:'Resume Tailoring — ATS Optimized',desc:'Rewrites your resume for a specific job description. Works for any industry.',prompt:`You are an expert resume writer and ATS specialist. Analyze the job description below and rewrite my resume to maximize ATS match while keeping all content truthful.
+
+MY CURRENT RESUME:
+[Paste your current resume here]
+
+JOB DESCRIPTION:
+[Paste the full job description here]
+
+MY INDUSTRY: [e.g. IT, Accounting, Healthcare, Trades, etc.]
+
+Instructions:
+1. Rewrite my professional summary to mirror the JD's language and priorities
+2. Reorder experience bullets so the most relevant ones appear first
+3. Naturally insert missing keywords from the JD where I can legitimately claim them
+4. Keep ALL quantified achievements — never remove numbers
+5. Flag any gaps between my profile and the JD so I can address them in my cover letter
+6. Format clearly: Summary → Core Competencies → Experience → Education → Additional
+7. Do not fabricate or exaggerate anything — accuracy is essential`},
+  {title:'Cover Letter Generator',desc:'4-paragraph human-sounding cover letter tailored to any role.',prompt:`Write a professional, human-sounding cover letter for the following role. Avoid generic openers like "I am writing to apply for..." and corporate clichés.
+
+MY BACKGROUND:
+[Describe your experience, key skills, and top 2-3 achievements with numbers]
+
+ROLE I'M APPLYING FOR:
+[Job title and company name]
+
+JOB DESCRIPTION:
+[Paste the full JD here]
+
+Structure it as 4 paragraphs:
+1. A genuine opening that connects me to this role/company specifically
+2. My most relevant achievements with specific numbers and results
+3. Skills and experience that match the JD's top requirements
+4. A confident, forward-looking close — not grovelling
+
+Keep it under 350 words. Sound like a real person, not a press release.`},
+  {title:'Application Email',desc:'Short, professional email to send with your application.',prompt:`Write a professional application email to accompany my resume and cover letter.
+
+ROLE: [Job title at Company name]
+MY TOP ACHIEVEMENT: [One specific result with a number — e.g. "reduced costs by 23%" or "managed a team of 12"]
+
+Requirements:
+- Under 150 words
+- Lead with my top achievement in the first sentence
+- Mention resume and cover letter are attached
+- Professional but warm — not stiff
+- End with a clear call to action`},
+  {title:'Interview Prep — Role Specific',desc:'Top 10 interview questions with coaching on how to answer each.',prompt:`You are an expert interview coach. Give me the top 10 interview questions for the role below, plus coaching on how to answer each one effectively.
+
+ROLE: [Job title]
+MY BACKGROUND: [Brief summary of your experience and top achievements]
+INDUSTRY: [Your industry]
+
+For each question, provide:
+1. The question
+2. Why interviewers ask it
+3. How to structure my answer using the STAR method (Situation, Task, Action, Result)
+4. What to avoid saying
+
+Be specific to my background — not generic advice.`},
+  {title:'Salary Negotiation Script',desc:'What to say when they ask about salary expectations.',prompt:`Help me negotiate salary for the following role. Give me exact scripts for different scenarios.
+
+ROLE: [Job title and company]
+MY EXPERIENCE LEVEL: [e.g. 5 years, entry-level, senior]
+MARKET RANGE: [Research this on Glassdoor/LinkedIn Salary — e.g. $65,000–$85,000]
+MY CURRENT SALARY: [Optional]
+MY TARGET SALARY: [What you want]
+
+Give me scripts for:
+1. When they ask "What are your salary expectations?" in the first interview
+2. When they make an offer that's below your target
+3. How to counter-offer professionally
+4. What to say if they say the budget is fixed`},
+  {title:'LinkedIn Profile Optimization',desc:'Improve your LinkedIn profile to attract recruiters.',prompt:`Review and rewrite key sections of my LinkedIn profile to attract recruiters for [TARGET ROLE] roles in [INDUSTRY].
+
+MY CURRENT HEADLINE: [Your current headline]
+MY CURRENT ABOUT SECTION: [Paste your current About section]
+TOP 3 ROLES I WANT: [e.g. "Operations Manager, Site Supervisor, Coordinator"]
+LOCATION: [Your city]
+
+Rewrite:
+1. A magnetic headline (under 120 chars) that includes keywords recruiters search for
+2. An About section (under 300 words) that tells my story, highlights achievements, and ends with a call to action
+3. 10 skills I should add to maximize searchability for my target roles
+4. A connection request message I can send to recruiters (under 300 chars)`},
+  {title:'Follow-Up Email After Interview',desc:'What to send after an interview to stand out.',prompt:`Write a follow-up email to send within 24 hours after a job interview.
+
+ROLE: [Job title at Company]
+INTERVIEWER NAME: [If known]
+SOMETHING SPECIFIC WE DISCUSSED: [A topic from the interview — makes it personal]
+MY KEY STRENGTH FOR THIS ROLE: [One thing you want to reinforce]
+
+Requirements:
+- Under 120 words
+- Warm and genuine — not sycophantic
+- Reference something specific from the conversation
+- Reinforce one key reason I'm a strong fit
+- Professional close`},
+  {title:'Career Change Cover Letter',desc:'Special template for switching industries or roles.',prompt:`I am making a career change and need a cover letter that makes my transition look intentional and credible.
+
+MY CURRENT/PREVIOUS ROLE: [Job title and industry]
+TARGET ROLE: [Job title and industry]
+WHY I'M MAKING THIS CHANGE: [Your genuine reason]
+TRANSFERABLE SKILLS I HAVE: [List 4-5 specific skills that cross over]
+GAP BETWEEN MY BACKGROUND AND THE JD: [Honest assessment]
+
+Write a cover letter that:
+1. Opens with my genuine motivation for the change
+2. Draws clear lines between my transferable skills and the JD's requirements
+3. Addresses the experience gap directly and confidently — not apologetically
+4. Shows I've done my research on the company/industry
+Keep it under 350 words.`},
+];
+
+const SALARIES = [
+  // IT
+  {role:'Junior Software Developer',ind:'it',indName:'IT & Software',low:55,high:80,tags:['JavaScript','Python','entry-level','remote']},
+  {role:'Senior Software Engineer',ind:'it',indName:'IT & Software',low:110,high:160,tags:['system design','cloud','5+ years','hybrid']},
+  {role:'DevOps / Cloud Engineer',ind:'it',indName:'IT & Software',low:90,high:140,tags:['AWS/Azure','Docker','CI/CD']},
+  {role:'Data Analyst',ind:'it',indName:'IT & Software',low:60,high:90,tags:['SQL','Python','Excel','Power BI']},
+  {role:'Cybersecurity Analyst',ind:'it',indName:'IT & Software',low:75,high:120,tags:['SIEM','SOC','CISSP','remote']},
+  {role:'Product Manager',ind:'it',indName:'IT & Software',low:95,high:150,tags:['roadmap','Agile','stakeholders']},
+  // Mechanical
+  {role:'Junior Mechanical Engineer',ind:'mech',indName:'Mechanical Eng.',low:55,high:75,tags:['CAD','entry-level','onsite']},
+  {role:'Senior Mechanical Engineer',ind:'mech',indName:'Mechanical Eng.',low:90,high:130,tags:['FEA','project lead','P.Eng.']},
+  {role:'HVAC Designer',ind:'mech',indName:'Mechanical Eng.',low:65,high:95,tags:['HVAC','AutoCAD','construction']},
+  {role:'Manufacturing Engineer',ind:'mech',indName:'Mechanical Eng.',low:70,high:100,tags:['lean','GD&T','Tier 1']},
+  // Civil
+  {role:'Civil Engineer EIT',ind:'civil',indName:'Civil Engineering',low:55,high:75,tags:['EIT','entry-level','site work']},
+  {role:'Project Manager (Civil)',ind:'civil',indName:'Civil Engineering',low:90,high:130,tags:['PMP','infrastructure','P.Eng.']},
+  {role:'Structural Engineer',ind:'civil',indName:'Civil Engineering',low:75,high:115,tags:['P.Eng.','SAP2000','Revit']},
+  {role:'Environmental Engineer',ind:'civil',indName:'Civil Engineering',low:65,high:100,tags:['EA','remediation','consulting']},
+  // Electrical
+  {role:'Electrical Engineer EIT',ind:'elec',indName:'Electrical & Electronics',low:58,high:80,tags:['EIT','entry-level','design']},
+  {role:'Senior Electrical Engineer',ind:'elec',indName:'Electrical & Electronics',low:95,high:135,tags:['P.Eng.','power systems','lead']},
+  {role:'PLC / Automation Engineer',ind:'elec',indName:'Electrical & Electronics',low:75,high:115,tags:['PLC','SCADA','manufacturing']},
+  {role:'Electronics Technician',ind:'elec',indName:'Electrical & Electronics',low:50,high:75,tags:['PCB','testing','hands-on']},
+  // Trades
+  {role:'Licensed Electrician (309A)',ind:'trades',indName:'Trades',low:65,high:100,tags:['Red Seal','journeyman','overtime']},
+  {role:'Plumber (306A)',ind:'trades',indName:'Trades',low:65,high:105,tags:['Red Seal','journeyman','commercial']},
+  {role:'HVAC/R Technician',ind:'trades',indName:'Trades',low:60,high:95,tags:['313D','refrigerants','certification']},
+  {role:'Millwright (433A)',ind:'trades',indName:'Trades',low:65,high:100,tags:['Red Seal','maintenance','industrial']},
+  {role:'Carpenter',ind:'trades',indName:'Trades',low:55,high:88,tags:['Red Seal','residential','framing']},
+  // Accounting
+  {role:'Accounting Clerk / Bookkeeper',ind:'accounting',indName:'Accounting & Finance',low:42,high:58,tags:['QuickBooks','AR/AP','entry-level']},
+  {role:'CPA (Newly Designated)',ind:'accounting',indName:'Accounting & Finance',low:68,high:90,tags:['CPA','public accounting','audit']},
+  {role:'Senior Accountant',ind:'accounting',indName:'Accounting & Finance',low:80,high:110,tags:['CPA','IFRS','consolidation']},
+  {role:'Financial Analyst',ind:'accounting',indName:'Accounting & Finance',low:65,high:100,tags:['FP&A','Excel','modelling']},
+  {role:'Controller',ind:'accounting',indName:'Accounting & Finance',low:110,high:160,tags:['CPA','ERP','director-track']},
+  // Business
+  {role:'Business Analyst',ind:'business',indName:'Business & Management',low:65,high:95,tags:['requirements','Agile','stakeholders']},
+  {role:'Operations Manager',ind:'business',indName:'Business & Management',low:75,high:115,tags:['P&L','multi-site','KPIs']},
+  {role:'Project Manager (PMP)',ind:'business',indName:'Business & Management',low:85,high:125,tags:['PMP','waterfall','Agile']},
+  {role:'General Manager',ind:'business',indName:'Business & Management',low:100,high:160,tags:['P&L','strategy','executive']},
+  // Admin
+  {role:'Administrative Assistant',ind:'admin',indName:'Admin & Office Support',low:38,high:55,tags:['MS Office','scheduling','entry-level']},
+  {role:'Executive Assistant',ind:'admin',indName:'Admin & Office Support',low:55,high:80,tags:['C-suite','travel','confidential']},
+  {role:'Office Manager',ind:'admin',indName:'Admin & Office Support',low:52,high:75,tags:['multi-function','HR support','vendors']},
+  {role:'Data Entry Specialist',ind:'admin',indName:'Admin & Office Support',low:35,high:50,tags:['accuracy','volume','ERP']},
+  // Security
+  {role:'Security Guard',ind:'security',indName:'Private Security',low:35,high:52,tags:['licence required','shift work','patrol']},
+  {role:'Security Supervisor',ind:'security',indName:'Private Security',low:48,high:68,tags:['team lead','site','scheduling']},
+  {role:'Security Operations Manager',ind:'security',indName:'Private Security',low:65,high:95,tags:['multi-site','CCTV','client mgmt']},
+  {role:'Loss Prevention Specialist',ind:'security',indName:'Private Security',low:42,high:62,tags:['retail','investigations','LP']},
+  // Supply Chain
+  {role:'Supply Chain Coordinator',ind:'supply',indName:'Supply Chain & Logistics',low:50,high:72,tags:['ERP','procurement','entry-mid']},
+  {role:'Logistics Supervisor',ind:'supply',indName:'Supply Chain & Logistics',low:60,high:88,tags:['DC','scheduling','team lead']},
+  {role:'Procurement Manager',ind:'supply',indName:'Supply Chain & Logistics',low:85,high:125,tags:['sourcing','contracts','savings']},
+  {role:'Supply Chain Analyst',ind:'supply',indName:'Supply Chain & Logistics',low:58,high:85,tags:['data','forecasting','SAP']},
+  // Healthcare
+  {role:'PSW / DSW',ind:'health',indName:'Healthcare & Nursing',low:36,high:52,tags:['certificate','personal care','community']},
+  {role:'Registered Nurse (RN)',ind:'health',indName:'Healthcare & Nursing',low:75,high:105,tags:['CNO','hospital','shift work']},
+  {role:'Medical Office Administrator',ind:'health',indName:'Healthcare & Nursing',low:40,high:58,tags:['EMR','scheduling','billing']},
+  {role:'Pharmacy Technician',ind:'health',indName:'Healthcare & Nursing',low:38,high:56,tags:['PEBC','retail/hospital','certified']},
+  // Marketing
+  {role:'Marketing Coordinator',ind:'marketing',indName:'Marketing & Comms',low:45,high:65,tags:['social media','content','entry-level']},
+  {role:'Digital Marketing Manager',ind:'marketing',indName:'Marketing & Comms',low:70,high:105,tags:['Google Ads','SEO','analytics']},
+  {role:'Communications Specialist',ind:'marketing',indName:'Marketing & Comms',low:55,high:82,tags:['PR','writing','internal comms']},
+  {role:'Brand Manager',ind:'marketing',indName:'Marketing & Comms',low:75,high:115,tags:['CPG','strategy','P&L']},
+  // Legal
+  {role:'Legal Assistant / Paralegal',ind:'legal',indName:'Legal & Paralegal',low:42,high:62,tags:['LSO','filing','drafting']},
+  {role:'In-House Counsel',ind:'legal',indName:'Legal & Paralegal',low:100,high:160,tags:['LLB/JD','corporate','contracts']},
+  {role:'Litigation Paralegal',ind:'legal',indName:'Legal & Paralegal',low:50,high:75,tags:['discovery','court filings','LSO']},
+  // Education
+  {role:'ECE / DECE',ind:'education',indName:'Education & Teaching',low:36,high:52,tags:['DECE','childcare','CECE']},
+  {role:'Supply Teacher / Teacher',ind:'education',indName:'Education & Teaching',low:55,high:102,tags:['OCT','Ontario curriculum','permanent/LTO']},
+  {role:'Educational Assistant',ind:'education',indName:'Education & Teaching',low:36,high:52,tags:['IEP','special education','CUPE']},
+  // HR
+  {role:'HR Coordinator',ind:'hr',indName:'Human Resources',low:48,high:68,tags:['HRIS','onboarding','entry-level']},
+  {role:'HR Business Partner',ind:'hr',indName:'Human Resources',low:78,high:115,tags:['CHRP/CHRL','ER','strategic']},
+  {role:'Talent Acquisition Specialist',ind:'hr',indName:'Human Resources',low:58,high:88,tags:['ATS','sourcing','high-volume']},
+  {role:'Total Rewards Manager',ind:'hr',indName:'Human Resources',low:90,high:135,tags:['compensation','benefits','equity']},
+  // Architecture
+  {role:'Architectural Technologist',ind:'arch',indName:'Architecture',low:52,high:78,tags:['Revit','AutoCAD','contract docs']},
+  {role:'Architect (OAA)',ind:'arch',indName:'Architecture',low:80,high:130,tags:['OAA','project lead','client mgmt']},
+  {role:'Interior Designer',ind:'arch',indName:'Architecture',low:48,high:78,tags:['space planning','FF&E','Revit']},
+];
+
+const PORTALS = [
+  {name:'Indeed',region:'Global · Canada-first',desc:'The largest job board globally with strong Canadian coverage. Best for volume across all industries.',tip:'Create a free account → Save a search → Turn on "Daily email alerts" for each role type you want.',url:'https://ca.indeed.com',badge:'b-green',badgeTxt:'Recommended'},
+  {name:'LinkedIn Jobs',region:'Global',desc:'Best for professional and white-collar roles. Recruiters actively source here. Keep your profile updated.',tip:'Set job alerts with "Easy Apply" filter → Connect with recruiters in your field → Set profile to "Open to Work".',url:'https://linkedin.com/jobs',badge:'b-blue',badgeTxt:'Essential'},
+  {name:'Glassdoor',region:'Global · Canada',desc:'Jobs + company reviews + salary data in one place. Great for researching employers before applying.',tip:'Use salary data before every interview. Read recent reviews to prepare for culture-fit questions.',url:'https://glassdoor.ca',badge:'b-purple',badgeTxt:'Research'},
+  {name:'Workopolis',region:'Canada',desc:'Canada-specific job board with strong coverage in Ontario, BC, and Alberta across most industries.',tip:'Good secondary board — set up alerts for your role. Check weekly alongside Indeed.',url:'https://workopolis.com',badge:'b-blue',badgeTxt:'Canada'},
+  {name:'Job Bank Canada',region:'Canada (Government)',desc:'Federal government job board. Free, comprehensive, and includes labour market data and wage info.',tip:'Free to post and apply. Includes government and federal public service roles. Labour market explorer is excellent.',url:'https://jobbank.gc.ca',badge:'b-blue',badgeTxt:'Canada · Free'},
+  {name:'Ontario Public Service',region:'Ontario, Canada',desc:'All Ontario provincial government roles — stable employment, competitive pay, defined-benefit pension.',tip:'Register an account and set job alerts by ministry and classification. Competition process is structured and fair.',url:'https://ontario.ca/page/jobs-ontario-public-service',badge:'b-blue',badgeTxt:'Ontario Gov'},
+  {name:'Levels.fyi',region:'Global',desc:'Salary and compensation data for tech roles. Highly specific — breaks down base, bonus, RSU by company.',tip:'Research before tech interviews. Know what senior engineers at your target company actually earn.',url:'https://levels.fyi',badge:'b-purple',badgeTxt:'Tech Salaries'},
+  {name:'Charity Village',region:'Canada',desc:'Non-profit, healthcare, education, and public sector roles in Canada. Unique inventory not found elsewhere.',tip:'Set up weekly digest. Good for healthcare coordinators, social workers, admin, and program roles.',url:'https://charityvillage.com',badge:'b-green',badgeTxt:'Non-Profit'},
+  {name:'Eluta.ca',region:'Canada',desc:'Aggregates postings directly from employer career pages — useful to catch roles not listed on major boards.',tip:'Run a daily search for your role and check the "posted today" filter. Catches direct employer postings early.',url:'https://eluta.ca',badge:'b-blue',badgeTxt:'Canada'},
+  {name:'Indeed Employer Careers',region:'Global',desc:'Go directly to company career pages — many employers post there first before listing on aggregators.',tip:'For target companies, bookmark their careers page and check it weekly. Apply there directly to avoid ATS delays.',url:'https://ca.indeed.com',badge:'b-amber',badgeTxt:'Pro Tip'},
+  {name:'Trades & Apprenticeship Portal',region:'Canada',desc:'Red Seal trades, apprenticeships, and skilled worker roles across Canada through provincial programs.',tip:'Check provincial apprenticeship websites (e.g., Ontario College of Trades) and local union halls for openings.',url:'https://skillsontario.com/apprenticeship',badge:'b-amber',badgeTxt:'Trades'},
+  {name:'Health Force Ontario',region:'Ontario, Canada',desc:'Healthcare-specific job board for Ontario — nurses, physicians, allied health, and support staff.',tip:'Register and set alerts. Good for rural and northern Ontario roles with incentives.',url:'https://healthforceontario.ca',badge:'b-green',badgeTxt:'Healthcare'},
+  {name:'Angellist / Wellfound',region:'Global',desc:'Tech startup jobs — often with equity compensation. Includes remote-first companies globally.',tip:'Great for developers, product managers, and marketers wanting startup equity. Salaries are transparent.',url:'https://wellfound.com',badge:'b-purple',badgeTxt:'Startups'},
+  {name:'Robert Half / Hays / Randstad',region:'Global · Canada',desc:'Staffing agencies — particularly strong for finance, accounting, IT, legal, and admin contract roles.',tip:'Register with 2–3 agencies in your field. Recruiters call you for roles not publicly listed.',url:'https://roberthalf.ca',badge:'b-amber',badgeTxt:'Staffing'},
+  {name:'Isarta',region:'Quebec, Canada',desc:'French-language job board for Quebec — marketing, communications, creative, and bilingual roles.',tip:'If you are bilingual and in Quebec, this board has exclusive postings not found on national boards.',url:'https://isarta.ca',badge:'b-blue',badgeTxt:'Quebec · FR'},
+];
+
+const Q_UNIVERSAL = [
+  {q:"Tell me about yourself.",why:"They want a 90-second narrative, not your life story.",hint:"Structure: Current role + key achievement → Previous relevant experience → Why this role. Keep it under 2 minutes. End with why you're here today."},
+  {q:"Why do you want to work here?",why:"They're testing if you've done research and are genuinely interested.",hint:"Mention something specific about the company — a recent project, their values, their reputation in the industry. Never say 'the salary' or 'it was the closest posting.'"},
+  {q:"What is your greatest strength?",why:"They want evidence, not a personality trait.",hint:"Choose one strength directly relevant to the JD. Immediately back it with a specific example and a result. 'I'm a strong communicator' means nothing without proof."},
+  {q:"What is your greatest weakness?",why:"They want self-awareness and a growth mindset.",hint:"Name a real weakness (not a 'strength in disguise'). Explain what you've done to manage it. Show growth. Example: 'I used to struggle with delegating — I now use weekly check-ins to stay informed without micromanaging.'"},
+  {q:"Tell me about a time you handled a conflict at work.",why:"They want to know you can manage difficult people professionally.",hint:"Use STAR. Focus on your actions, not the other person's behaviour. Show you resolved it constructively. Never badmouth a former colleague."},
+  {q:"Where do you see yourself in 5 years?",why:"They want to know if this role fits your genuine career path.",hint:"Be honest but align with the role. Show ambition without implying you'll leave in 6 months. Example: 'I want to grow into a senior/lead role in [field] — this position is the right foundation for that.'"},
+  {q:"Why are you leaving your current role?",why:"They're screening for red flags — negativity, instability, or dishonesty.",hint:"Keep it positive and forward-looking. 'I'm looking for a role with greater scope' is fine. 'My manager was terrible' is a red flag for them, even if true."},
+  {q:"Describe a time you failed and what you learned.",why:"They want accountability and learning agility.",hint:"Choose a real failure — not a minor mistake. Own it clearly. Focus most of your answer on what you learned and what you'd do differently. Show the outcome improved."},
+  {q:"How do you prioritize when you have multiple deadlines?",why:"They're testing time management and judgment under pressure.",hint:"Give a specific example. Mention a real tool or system you use (list, calendar, project management tool). Show you communicate proactively when something might slip."},
+  {q:"Do you have any questions for us?",why:"This is your chance to show genuine interest and evaluate the role.",hint:"Always have 3 questions ready. Examples: 'What does success look like in this role in the first 90 days?' / 'What are the biggest challenges the team is facing?' / 'How would you describe the culture here?'"},
+];
+
+const IND_QUESTIONS = {
+  it:[
+    {q:"Walk me through how you'd debug a production issue at 2am.",hint:"Show your systematic approach: logs → monitoring → reproduce → isolate → fix → post-mortem. Emphasize communication with stakeholders.",badge:"Technical"},
+    {q:"How do you stay current with technology?",hint:"Name specific resources: conferences, newsletters, GitHub projects, personal side projects. Show genuine curiosity, not just course certificates.",badge:"Culture fit"},
+    {q:"Tell me about a system design decision you made and the trade-offs.",hint:"Describe a real decision. Show you considered scalability, cost, maintainability, and team expertise — not just the 'best' technical solution.",badge:"Technical"},
+    {q:"How do you handle technical debt?",hint:"Show you balance short-term delivery with long-term maintainability. Give an example of advocating for refactoring time while still shipping.",badge:"Judgment"},
+  ],
+  mech:[
+    {q:"Describe a design that failed and how you handled it.",hint:"Show systematic failure analysis, design iteration, and how you documented lessons learned. Engineers who hide failures are dangerous.",badge:"Technical"},
+    {q:"How do you balance design perfection with project deadlines?",hint:"Show judgment and communication skills. Engineering is always about trade-offs — cost, time, performance, safety.",badge:"Judgment"},
+    {q:"Tell me about your experience with [specific software/standard in JD].",hint:"Be honest about your proficiency level. Show how you've learned new tools quickly if you're unfamiliar.",badge:"Technical"},
+    {q:"Walk me through how you'd conduct a failure analysis.",hint:"Show your methodology: define the problem → collect data → identify root cause → corrective action → prevention. Use a real example.",badge:"Technical"},
+  ],
+  civil:[
+    {q:"Tell me about a project where you had to manage conflicting stakeholder requirements.",hint:"Show diplomacy, technical judgment, and documentation skills. Stakeholder management is as important as engineering in civil roles.",badge:"Leadership"},
+    {q:"How do you ensure quality control on a construction site?",hint:"Talk about inspection protocols, documentation, non-conformance reports, and escalation paths. Show safety is always the priority.",badge:"Technical"},
+    {q:"Describe your experience with permits and regulatory approvals.",hint:"Name specific codes and regulatory bodies you've worked with. Show you understand the process and timelines involved.",badge:"Technical"},
+    {q:"How do you manage scope creep on a project?",hint:"Show you document scope clearly, track changes formally, assess cost/schedule impact, and communicate proactively with clients.",badge:"PM"},
+  ],
+  elec:[
+    {q:"Walk me through how you'd troubleshoot an intermittent electrical fault.",hint:"Show a systematic diagnostic approach: visual inspection → measurements → load testing → isolation → documentation. Safety first.",badge:"Technical"},
+    {q:"Tell me about your experience with [PLC/SCADA/power systems from JD].",hint:"Be specific about the platforms, the scale of systems, and what you've built or maintained. Show hands-on depth.",badge:"Technical"},
+    {q:"How do you ensure compliance with electrical codes and standards?",hint:"Name the codes relevant to your work (NEC, CSA, IEC). Show you build compliance into design, not just check it at the end.",badge:"Technical"},
+    {q:"Describe a time you identified a safety hazard and what you did.",hint:"Show immediate response, documentation, escalation, and corrective action. Electrical safety incidents can be fatal — they need to know you take it seriously.",badge:"Safety"},
+  ],
+  trades:[
+    {q:"Walk me through how you'd troubleshoot [specific system relevant to trade].",hint:"Show your diagnostic methodology step by step. They're testing technical competence and safety awareness simultaneously.",badge:"Technical"},
+    {q:"How do you stay current with code changes and new standards?",hint:"Name specific associations, courses, or trade publications. Show you take continuing education seriously — codes change often.",badge:"Professionalism"},
+    {q:"Tell me about a time you had to work safely in a hazardous environment.",hint:"Name the specific hazard (confined space, live electrical, heights). Walk through your lockout/tagout, PPE, and permit process.",badge:"Safety"},
+    {q:"How do you handle a situation where a client or supervisor asks you to cut a safety corner?",hint:"Show you know how to push back professionally and by the book. Cutting corners in trades can be fatal. Never say you'd comply.",badge:"Integrity"},
+  ],
+  accounting:[
+    {q:"Walk me through a month-end close process you've managed.",hint:"Show you know the full sequence: reconciliations, accruals, journal entries, review, reporting. Mention the timeline and your role.",badge:"Technical"},
+    {q:"Tell me about a time you found a significant error in financial statements.",hint:"Show attention to detail, professional skepticism, how you investigated, and how you corrected and prevented recurrence.",badge:"Technical"},
+    {q:"How do you handle pressure during audit season?",hint:"Show prioritization, communication, and stamina. Auditors want to know you can perform under pressure without compromising accuracy.",badge:"Resilience"},
+    {q:"What accounting software have you used and what are its limitations?",hint:"Be honest and specific. Knowing limitations shows real depth — surface users only know what it can do.",badge:"Technical"},
+  ],
+  business:[
+    {q:"Tell me about a strategic initiative you led from idea to execution.",hint:"Show end-to-end ownership: problem identification → business case → stakeholder alignment → execution → measurable results.",badge:"Leadership"},
+    {q:"How do you manage a project that's behind schedule and over budget?",hint:"Show your diagnostic approach: root cause → options analysis → stakeholder communication → recovery plan. Don't pretend it's never happened.",badge:"PM"},
+    {q:"Describe a time you influenced a decision without direct authority.",hint:"Show stakeholder management, data-driven arguments, relationship building, and strategic patience.",badge:"Influence"},
+    {q:"How do you prioritize competing business initiatives?",hint:"Show a framework: strategic alignment, resource availability, ROI, urgency. Give a real example of a trade-off you made.",badge:"Judgment"},
+  ],
+  admin:[
+    {q:"Tell me about a time you managed a scheduling conflict for a senior executive.",hint:"Show initiative, discretion, judgment, and communication. Executives trust admins who solve problems without being asked.",badge:"Competence"},
+    {q:"How do you handle highly confidential information?",hint:"Show you understand the stakes, follow policies, and never share what shouldn't be shared — including casually at lunch.",badge:"Integrity"},
+    {q:"Describe a time you had to manage multiple competing priorities in one day.",hint:"Show your system for prioritizing, communicating when something will slip, and staying calm under volume.",badge:"Organization"},
+    {q:"What office software and tools are you proficient in?",hint:"Be specific — name the versions and features you use daily. Show you learn new tools quickly with examples.",badge:"Technical"},
+  ],
+  security:[
+    {q:"Tell me about a time you de-escalated a hostile situation.",hint:"Show assessment skills, verbal techniques, calmness under pressure, and documentation afterward. Safety of all parties is always the priority.",badge:"Judgment"},
+    {q:"Walk me through how you write an incident report.",hint:"Show you know: who/what/when/where/how, exact times, verbatim quotes, objective language, and chain of custody for evidence.",badge:"Technical"},
+    {q:"How do you handle a situation where a supervisor gives you an instruction you believe violates policy?",hint:"Show you know the escalation chain, document everything, and follow proper channels. Integrity in security is non-negotiable.",badge:"Integrity"},
+    {q:"Describe your experience with [access control / CCTV / specific system in JD].",hint:"Be specific about the brand, your role, what you monitored, and any investigations you supported.",badge:"Technical"},
+  ],
+  supply:[
+    {q:"Tell me about a time you resolved a supply chain disruption.",hint:"Show problem identification, supplier communication, alternative sourcing, stakeholder updates, and lessons learned.",badge:"Problem-solving"},
+    {q:"How do you evaluate and select new vendors?",hint:"Show your criteria: cost, quality, reliability, lead times, compliance, financial stability. Give a real example.",badge:"Judgment"},
+    {q:"Describe your experience with [ERP/WMS system in JD].",hint:"Be specific about what you used it for, your proficiency level, and any improvements you made to how it was used.",badge:"Technical"},
+    {q:"How do you manage inventory accuracy?",hint:"Show your cycle count methodology, root cause analysis for discrepancies, and system reconciliation process.",badge:"Technical"},
+  ],
+  health:[
+    {q:"Describe a time you advocated for a patient when you felt their care was being compromised.",hint:"Show you know how to escalate professionally, document concerns, and keep the patient's best interests central — while respecting scope of practice.",badge:"Advocacy"},
+    {q:"How do you prioritize when you have multiple patients with urgent needs?",hint:"Show your triage framework, communication with the team, and how you document your decisions.",badge:"Clinical"},
+    {q:"Tell me about a time you made a medication or clinical error and how you handled it.",hint:"This is a high-integrity question. Show immediate disclosure, patient safety response, incident reporting, and learning. Never cover up.",badge:"Integrity"},
+    {q:"How do you maintain your wellbeing in a high-stress clinical environment?",hint:"Show specific strategies you actually use — not generic answers. Burnout in healthcare is real; they want to know you're sustainable.",badge:"Resilience"},
+  ],
+  marketing:[
+    {q:"Walk me through a campaign you built from brief to results.",hint:"Show the full process: objective → audience → channels → creative → execution → measurement. Lead with results.",badge:"Strategic"},
+    {q:"Tell me about a campaign that didn't work and what you learned.",hint:"Show analytical thinking and honesty. The best marketers know why things failed as well as why they succeeded.",badge:"Learning"},
+    {q:"How do you measure the ROI of a marketing initiative?",hint:"Show you think in outcomes, not outputs. Reach and impressions are outputs. Revenue, leads, and CAC are outcomes.",badge:"Analytics"},
+    {q:"How do you stay current with digital marketing changes?",hint:"Name specific newsletters, tools, creators, or conferences. The algorithm changes constantly — show you keep up.",badge:"Currency"},
+  ],
+  legal:[
+    {q:"Tell me about a file where you had to manage a tight deadline and multiple complex tasks simultaneously.",hint:"Show your file management system, communication with lawyers, prioritization, and what you did when something threatened to slip.",badge:"Organization"},
+    {q:"How do you ensure accuracy in legal documents and correspondence?",hint:"Show your proofreading system, double-checking references, and understanding the consequences of errors in legal documents.",badge:"Accuracy"},
+    {q:"Describe your experience with [practice area from JD].",hint:"Be specific about the types of files, the parties involved, your role, and the tools or software you used.",badge:"Technical"},
+    {q:"How do you handle a client who is anxious or upset about their legal matter?",hint:"Show empathy, professionalism, and clear communication. Legal clients are often in crisis — composure matters enormously.",badge:"Client"},
+  ],
+  education:[
+    {q:"How do you differentiate instruction for diverse learning needs in the same classroom?",hint:"Give specific examples of strategies: tiered tasks, flexible grouping, modified assessments, assistive technology. Reference real students (anonymized).",badge:"Pedagogy"},
+    {q:"Describe a lesson that didn't go as planned and how you adapted.",hint:"Show reflective practice. The best teachers adjust in real time and learn from every class.",badge:"Adaptability"},
+    {q:"How do you handle a student who is consistently disruptive?",hint:"Show your behaviour management approach: relationship first, restorative practices, parent communication, documentation, and when you escalate.",badge:"Management"},
+    {q:"How do you incorporate Indigenous perspectives and anti-racist pedagogy into your teaching?",hint:"Be specific and honest. Show ongoing learning, specific curriculum connections, and community consultation where appropriate.",badge:"Equity"},
+  ],
+  hr:[
+    {q:"Tell me about a time you had to deliver difficult feedback to a manager or senior leader.",hint:"Show courage, professionalism, data-driven framing, and outcome. HR credibility depends on the ability to speak truth upward.",badge:"Courage"},
+    {q:"Describe a complex employee relations matter you managed.",hint:"Show confidentiality, procedural fairness, documentation, legal awareness, and outcome. Never reveal names or identifiers.",badge:"ER"},
+    {q:"How do you stay current with employment law changes?",hint:"Name specific sources: HRPA, CHRA, provincial legislation updates, case law summaries. Show you proactively brief leaders on implications.",badge:"Currency"},
+    {q:"Walk me through how you'd design a talent acquisition process from scratch.",hint:"Show end-to-end thinking: job analysis → JD → sourcing → screening → assessment → offer → onboarding. Show equity and inclusion is built in from the start.",badge:"Strategic"},
+  ],
+  arch:[
+    {q:"Walk me through your design process from brief to construction documents.",hint:"Show each phase with examples: programming → schematic → DD → CD → CA. Show how client feedback shapes the design.",badge:"Process"},
+    {q:"How do you manage design changes requested late in the process?",hint:"Show scope documentation, cost/schedule impact assessment, client communication, and how you protect the design intent.",badge:"PM"},
+    {q:"Tell me about a project where you had to balance design vision with budget constraints.",hint:"Show creative problem-solving, value engineering, and how you maintained design quality within real-world constraints.",badge:"Judgment"},
+    {q:"How do you coordinate with engineers and contractors during construction administration?",hint:"Show your RFI, submittal, and site review process. Show you can communicate technical requirements clearly to non-architects.",badge:"Coordination"},
+  ],
+};
+
+// ════ STATE ════════════════════════════════════════════════════
+let selInd = 'it', selSalInd = 'all', selPortalRegion = 'all', selIntInd = 'it';
+
+// ════ NAVIGATION ══════════════════════════════════════════════
+function nav(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('on'));
+  document.querySelectorAll('.nt').forEach(t => t.classList.remove('on'));
+  document.getElementById('sec-'+id).classList.add('on');
+  el.classList.add('on');
+  document.getElementById('hero').style.display = (id==='ats') ? '' : 'none';
+  if(id==='salary') renderSalary();
+  if(id==='portals') renderPortals();
+  if(id==='prompts') renderPrompts();
+  if(id==='interview') renderInterview();
+}
+
+// ════ INDUSTRY GRIDS ══════════════════════════════════════════
+function buildIndGrid(containerId, activeFn, activeId) {
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  el.innerHTML = INDUSTRIES.map(i => `
+    <div class="ind-card ${activeId===i.id?'on':''}" onclick="${activeFn}('${i.id}',this)">
+      <span class="ind-icon">${i.icon}</span>
+      <div class="ind-name">${i.name}</div>
+    </div>
+  `).join('');
+}
+
+// ════ ATS SCORER ══════════════════════════════════════════════
+buildIndGrid('ind-grid-ats', 'selectAtsInd', 'it');
+function selectAtsInd(id, el) {
+  selInd = id;
+  document.querySelectorAll('#ind-grid-ats .ind-card').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+}
+function score() {
+  const jd = document.getElementById('jd').value.trim().toLowerCase();
+  if(jd.length < 80) { alert('Please paste a more complete job description for an accurate score.'); return; }
+  const ind = INDUSTRIES.find(i => i.id === selInd);
+  const hits = [], misses = [];
+  ind.kw.profile.forEach(k => {
+    const words = k.split(' ');
+    if(jd.includes(k) || words.some(w => w.length>4 && jd.includes(w))) hits.push(k);
+  });
+  ind.kw.gaps.forEach(k => { if(jd.includes(k.toLowerCase())) misses.push(k); });
+  const base = Math.round((hits.length / ind.kw.profile.length) * 65);
+  const bonus = Math.min(20, misses.length * 4);
+  const sc = Math.min(93, base + bonus + 12);
+  document.getElementById('ph-ats').style.display = 'none';
+  document.getElementById('ats-content').style.display = 'block';
+  const c = sc >= 75 ? '#2ECC8A' : sc >= 55 ? '#F5A623' : '#E85C5C';
+  const arc = document.getElementById('arc');
+  arc.style.stroke = c;
+  arc.style.strokeDashoffset = 314 - (sc/100*314);
+  document.getElementById('snum').textContent = sc + '%';
+  document.getElementById('snum').style.color = c;
+  const verdicts = sc >= 75 ? ['Strong match','Apply today — generate tailored docs with the prompts tab'] : sc >= 55 ? ['Good fit','Address missing keywords in your resume before applying'] : ['Stretch role','Bridge the gaps in your cover letter or upskill first'];
+  document.getElementById('sverdict').innerHTML = `<span style="color:${c}">${verdicts[0]}</span> — ${verdicts[1]}`;
+  document.getElementById('sbar').style.width = sc + '%';
+  document.getElementById('sbar').style.background = c;
+  document.getElementById('kw-found').innerHTML = hits.length ? hits.map(k=>`<span class="kw kw-hit">${k}</span>`).join('') : '<span class="kw kw-na">None detected — review your resume</span>';
+  document.getElementById('kw-missing').innerHTML = misses.length ? misses.map(k=>`<span class="kw kw-miss">${k}</span>`).join('') : '<span class="kw kw-na">No critical gaps found</span>';
+  const advice = [];
+  if(sc < 55) advice.push({c:'tip-red',t:'Your profile has significant gaps for this role. Consider whether you meet the minimum requirements before applying.'});
+  if(misses.length > 3) advice.push({c:'tip-amber',t:`Add these ${misses.length} missing keywords naturally to your resume where you can legitimately claim them: ${misses.slice(0,4).join(', ')}.`});
+  if(hits.length > 10) advice.push({c:'tip-green',t:'Strong keyword alignment — your resume already covers the core requirements well.'});
+  advice.push({c:'tip-blue',t:'Use the Prompts tab → "Resume Tailoring" to generate an ATS-optimized resume for this specific JD using a free AI tool.'});
+  document.getElementById('gap-advice').innerHTML = advice.map(a=>`<div class="tip-box ${a.c}">${a.t}</div>`).join('');
+}
+function clearATS() {
+  document.getElementById('jd').value = '';
+  document.getElementById('ph-ats').style.display = 'flex';
+  document.getElementById('ats-content').style.display = 'none';
+  document.getElementById('gap-advice').innerHTML = '';
+}
+
+// ════ PROMPTS ════════════════════════════════════════════════
+function renderPrompts() {
+  document.getElementById('prompt-list').innerHTML = PROMPTS.map((p,i) => `
+    <div class="prompt-card">
+      <div class="prompt-title">${p.title}</div>
+      <div class="prompt-desc">${p.desc}</div>
+      <div class="prompt-box">${p.prompt}</div>
+      <button class="btn btn-sm btn-copy" onclick="copyP(${i},this)">Copy Prompt</button>
+      <span class="copy-success" id="cs-${i}">Copied!</span>
+      <a href="https://claude.ai" target="_blank" class="btn btn-sm btn-green" style="margin-left:6px">Open Claude.ai →</a>
+    </div>
+  `).join('');
+}
+function copyP(i,btn) {
+  navigator.clipboard.writeText(PROMPTS[i].prompt).then(() => {
+    const el = document.getElementById('cs-'+i);
+    el.style.opacity = '1';
+    setTimeout(() => el.style.opacity='0', 2200);
+  });
+}
+
+// ════ SALARY ════════════════════════════════════════════════
+function renderSalary() {
+  const filters = ['all',...new Set(INDUSTRIES.map(i=>i.id))];
+  document.getElementById('sal-filters').innerHTML = filters.map(f => {
+    const ind = INDUSTRIES.find(i=>i.id===f);
+    const label = f==='all' ? 'All Industries' : ind ? ind.icon+' '+ind.name : f;
+    return `<button class="btn btn-sm ${selSalInd===f?'btn-primary':''}" onclick="filterSal('${f}',this)">${label}</button>`;
+  }).join('');
+  const filtered = selSalInd==='all' ? SALARIES : SALARIES.filter(s=>s.ind===selSalInd);
+  document.getElementById('sal-grid').innerHTML = filtered.map(s => `
+    <div class="sal-card">
+      <div class="sal-role">${s.role}</div>
+      <div class="sal-ind">${s.indName}</div>
+      <div class="sal-range">
+        <span class="sal-low">$${s.low}K</span>
+        <span class="sal-sep">→</span>
+        <span class="sal-high">$${s.high}K</span>
+        <span style="font-size:.7rem;color:var(--muted)">CAD/yr</span>
+      </div>
+      <div class="sal-bar"></div>
+      <div class="sal-tags">${s.tags.map(t=>`<span class="sal-tag">${t}</span>`).join('')}</div>
+    </div>
+  `).join('');
+}
+function filterSal(id, el) {
+  selSalInd = id;
+  renderSalary();
+}
+
+// ════ PORTALS ════════════════════════════════════════════════
+function renderPortals() {
+  document.getElementById('portal-grid').innerHTML = PORTALS.map(p => `
+    <div class="portal-card">
+      <div>
+        <div class="portal-name">${p.name} <span class="badge ${p.badge}" style="margin-left:6px;font-size:.65rem">${p.badgeTxt}</span></div>
+        <div class="portal-region">${p.region}</div>
+      </div>
+      <div class="portal-desc">${p.desc}</div>
+      <div class="portal-tip">${p.tip}</div>
+      <a href="${p.url}" target="_blank" class="btn btn-sm btn-primary">Open Portal →</a>
+    </div>
+  `).join('');
+}
+
+// ════ INTERVIEW ══════════════════════════════════════════════
+function renderInterview() {
+  buildIndGrid('ind-grid-int', 'selectIntInd', selIntInd);
+  renderUniversal();
+  renderIndQ();
+}
+function renderUniversal() {
+  document.getElementById('q-universal').innerHTML = Q_UNIVERSAL.map(q => `
+    <div class="q-item" onclick="this.classList.toggle('expanded')">
+      <div class="q-text">${q.q}</div>
+      <div class="q-hint">${q.hint}</div>
+    </div>
+  `).join('');
+}
+function selectIntInd(id, el) {
+  selIntInd = id;
+  document.querySelectorAll('#ind-grid-int .ind-card').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  const ind = INDUSTRIES.find(i=>i.id===id);
+  document.getElementById('ind-q-label').textContent = ind ? ind.icon+' '+ind.name+' Questions' : 'Industry Questions';
+  renderIndQ();
+}
+function renderIndQ() {
+  const qs = IND_QUESTIONS[selIntInd] || [];
+  document.getElementById('q-industry').innerHTML = qs.length ? qs.map(q => `
+    <div class="q-item" onclick="this.classList.toggle('expanded')">
+      <div class="q-text">${q.q} <span class="badge b-blue q-badge" style="float:right;font-size:.65rem;margin-top:2px">${q.badge}</span></div>
+      <div class="q-hint">${q.hint}</div>
+    </div>
+  `).join('') : '<div style="font-size:.82rem;color:var(--muted);padding:1rem">Select an industry above to see specific questions.</div>';
+}
+
+// ════ INIT ════════════════════════════════════════════════════
+renderPrompts();
+renderSalary();
+renderPortals();
+renderInterview();
+</script>
+</body>
+</html>
