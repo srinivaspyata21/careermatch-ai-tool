@@ -4,7 +4,7 @@
 
 A complete job search toolkit built in a single HTML file. ATS keyword scorer, salary benchmarks, interview prep guides, AI prompt templates, and job portal directory — covering **16 industries** across Canada and globally.
 
-**[🚀 Live Demo →](https://srinivaspyata21.github.io/careermatch-ai)**
+**[🚀 Live Demo →](https://srinivaspyata21.github.io/careermatch-ai-tool)**
 
 ---
 
